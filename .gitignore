@@ -1,0 +1,4 @@
+# Exclude credentials from git
+credentials.*
+
+modules/__pycache__

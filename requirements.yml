@@ -1,0 +1,11 @@
+name: safehaven
+dependencies:
+  - numpy
+  - pandas
+  - seaborn
+  - matplotlib
+  - quandl
+  - scikit-learn
+  - ipykernel
+  - numba
+  - ipywidgets
