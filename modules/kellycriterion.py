@@ -2,9 +2,44 @@
 
 """
 
-# Import modules
+###########
+# IMPORTS #
+###########
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+from scipy.stats import gmean
+
+####################
+# HELPER FUNCTIONS #
+####################
+
+def _weighted_average(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
+    """
+    This function calculates the weighted average for each pair of values in the 
+    first two arrays based on the ratio in the third array.
+    
+    Arguments:
+    - dice_outcomes: A numpy array with the dice outcomes
+    - cash_outcomes: A numpy array with the cash outcomes
+    - dice_to_cash_ratio: A numpy array with two elements representing the weights for dice and cash
+    
+    Return:
+    - A numpy array with the weighted averages
+    """
+    
+     # Make sure all arrays have the same length
+    assert len(dice_outcomes) == len(cash_outcomes), "The first two arrays must have the same length"
+    assert len(dice_to_cash_ratio) == 2, "The ratio array must have exactly two elements"
+
+    dice_weight, cash_weight = dice_to_cash_ratio
+    weighted_averages = []
+
+    for dice, cash in zip(dice_outcomes, cash_outcomes):
+        weighted_average = dice * dice_weight + cash * cash_weight
+        weighted_averages.append(weighted_average)
+
+    return np.array(weighted_averages)
 
 def _dice_distribution(ax, dice_outcomes):
     """
@@ -30,7 +65,7 @@ def _dice_distribution(ax, dice_outcomes):
     ax.set_title('Xs and Os Profile: The Kelly Criterion')
     ax.set_yticks(np.arange(min(counts), max(counts) + 1, 1))  # Set integer ticks on y-axis
 
-def _dice_outcome(ax, dice_outcomes):
+def _dice_outcome(ax, dice_outcomes, df_kelly):
     """
     This function takes in an Axes object and an array of dice outcomes, and plots the winning probabilities
     based on the dice outcomes on the Axes.
@@ -42,10 +77,6 @@ def _dice_outcome(ax, dice_outcomes):
     Returns:
     None
     """
-    
-    # Extract the variable name of the dice outcomes for labeling purposes
-    dice_name = extract_variable_name(dice_outcomes, globals())
-
     # Calculate the winning probabilities based on the dice outcomes
     win_probabilities_dice = [(outcome - 1.0) * 100 for outcome in dice_outcomes]
 
@@ -59,7 +90,7 @@ def _dice_outcome(ax, dice_outcomes):
     ax.set_ylim([-50, 100])  # the limits are set from -50 to 100
 
     # Set the label for the y-axis
-    ax.set_ylabel(dice_name + " Roll")  # the y-axis is labeled as "[dice_name] Roll"
+    ax.set_ylabel("Dice Roll")  # the y-axis is labeled as "[dice_name] Roll"
 
     # Enable the grid
     ax.grid(True)
@@ -75,7 +106,7 @@ def _dice_outcome(ax, dice_outcomes):
     ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_dice:.2f}%', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_dice:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _cash_outcome(ax, dice_outcomes, cash_outcomes):
+def _cash_outcome(ax, dice_outcomes, cash_outcomes, df_kelly):
     """
     This function creates a subplot of cash outcomes based on the provided dice and cash outcomes.
 
@@ -87,10 +118,6 @@ def _cash_outcome(ax, dice_outcomes, cash_outcomes):
     Return:
     None
     """
-
-    # Extract the variable name of cash_outcomes
-    cash_name = extract_variable_name(cash_outcomes, globals())
-
     # Determine the number of unique categories based on dice outcomes
     n_categories = len(np.unique(dice_outcomes))
 
@@ -110,7 +137,7 @@ def _cash_outcome(ax, dice_outcomes, cash_outcomes):
     ax.set_ylim([-50, 100])
 
     # Set the label for the y-axis
-    ax.set_ylabel(cash_name)
+    ax.set_ylabel("Cash")
 
     # Set the x-axis label
     ax.set_xlabel('=====================================================================================')
@@ -129,7 +156,7 @@ def _cash_outcome(ax, dice_outcomes, cash_outcomes):
     ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_cash:.2f}%', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_cash:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio):
+def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio, df_kelly):
     """
     This function plots the weighted average outcomes based on the provided ratio.
 
@@ -142,12 +169,8 @@ def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     Returns:
     None
     """
-    # Extract variable names for labels
-    dice_name = extract_variable_name(dice_outcomes, globals())
-    cash_name = extract_variable_name(cash_outcomes, globals())
-
     # Calculate the weighted average of the outcomes
-    weighted_avg_outcomes = weighted_average(dice_outcomes, cash_outcomes, dice_to_cash_ratio)
+    weighted_avg_outcomes = _weighted_average(dice_outcomes, cash_outcomes, dice_to_cash_ratio)
     
     # Convert outcomes to percentage probabilities
     win_probabilities_weighted = [(outcome - 1.0) * 100 for outcome in weighted_avg_outcomes]
@@ -162,7 +185,7 @@ def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     ax.set_ylim([-50, 100])
 
     # Set the y-axis label
-    ax.set_ylabel(f"{dice_to_cash_ratio[0] * 100} % " + dice_name + " and " + f"{dice_to_cash_ratio[1] * 100} % " + cash_name)
+    ax.set_ylabel(f"{dice_to_cash_ratio[0] * 100} % Dice Roll and " + f"{dice_to_cash_ratio[1] * 100} % Cash")
 
     # Enable the grid
     ax.grid(True)
@@ -181,8 +204,58 @@ def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_combined:.2f}%' + f' (Cost: {cost:.2f}%)', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_combined:.2f}%' + f' (Net: +{net:.2f}%)', transform=ax.transAxes, verticalalignment='top')
 
+############# 
+# FUNCTIONS #
+#############
 
-def kelly_criterion(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
+def tablemaker(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
+    """
+    Calculate arithmetic and geometric mean of a combined wager of dice and cash.
+
+    Arguments:
+    - dice_outcomes: Array of dice outcomes
+    - cash_outcomes: Array of cash outcomes
+    - dice_to_cash_ratio: Array of ratios representing the allocation of wealth to dice and cash outcomes
+
+    Returns:
+    - df_kelly: DataFrame containing the arithmetic and geometric means of the outcomes
+    """
+
+    # Check whether the dice_outcomes and cash_outcomes are of the same length, and raise an error if not
+    assert len(dice_outcomes) == len(cash_outcomes), 'The dice_outcomes and cash_outcomes arrays must be of the same length.'
+
+    # Check whether dice_to_cash_ratio sums to 1, and raise an error if not
+    assert np.isclose(np.sum(dice_to_cash_ratio), 1), 'The dice_to_cash_ratio must sum to 1.'
+
+    # Calculate the arithmetic and geometric mean of the dice outcomes
+    arith_mean_dice = (np.mean(dice_outcomes) - 1) * 100
+    geom_mean_dice = (gmean(dice_outcomes) - 1) * 100
+
+    # Calculate the arithmetic and geometric mean of the cash outcomes
+    arith_mean_cash = (np.mean(cash_outcomes) - 1) * 100
+    geom_mean_cash = (gmean(cash_outcomes) - 1) * 100
+
+    # Calculate the arithmetic and geometric mean of the combined outcomes
+    combined_outcomes = dice_to_cash_ratio[0] * dice_outcomes + dice_to_cash_ratio[1] * cash_outcomes
+    arith_mean_combined = (np.mean(combined_outcomes) - 1) * 100
+    geom_mean_combined = (gmean(combined_outcomes) - 1) * 100
+
+    # Calculate cost and net
+    cost = arith_mean_combined - arith_mean_dice
+    net = geom_mean_combined - geom_mean_dice
+
+    # Create a dictionary with the calculated values
+    data = {
+        'arith_avg': [arith_mean_dice, arith_mean_cash, arith_mean_combined, cost],
+        'geom_avg': [geom_mean_dice, geom_mean_cash, geom_mean_combined, net]
+    }
+
+    # Create a DataFrame from the dictionary
+    df_kelly = pd.DataFrame(data, index=['dice_roll', 'cash', 'combined', 'net/cost'])
+    return df_kelly
+
+
+def plot_xo_profile(dice_outcomes, cash_outcomes, dice_to_cash_ratio, df_kelly):
     """
     This function calculates the weighted average for each pair of values in the 
     first two arrays based on the ratio in the third array.
@@ -202,14 +275,13 @@ def kelly_criterion(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     _dice_distribution(ax1, dice_outcomes)
 
     # Subplot 2: Height of dice outcome
-    _dice_outcome(ax2, dice_outcomes)
+    _dice_outcome(ax2, dice_outcomes, df_kelly)
 
     # Subplot 3: Height of cash outcome
-    _cash_outcome(ax3, dice_outcomes, cash_outcomes)
+    _cash_outcome(ax3, dice_outcomes, cash_outcomes, df_kelly)
 
     # Subplot 4: Height of combined outcome
-    _combined_outcome(ax4, dice_outcomes, cash_outcomes, dice_to_cash_ratio)
+    _combined_outcome(ax4, dice_outcomes, cash_outcomes, dice_to_cash_ratio, df_kelly)
 
     # Adjust spacing between subplots
     plt.tight_layout()
-    plt.show()
