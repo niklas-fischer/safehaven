@@ -285,3 +285,6 @@ def plot_xo_profile(dice_outcomes, cash_outcomes, dice_to_cash_ratio, df_kelly):
 
     # Adjust spacing between subplots
     plt.tight_layout()
+
+    # Saving plot
+    plt.savefig('../plots/xo_profile.png', dpi=300)

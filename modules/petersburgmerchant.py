@@ -34,7 +34,7 @@ def bev(payoffs, wealth_amount, bet_size):
     bev = math.exp(em)
     return bev
 
-def betting_plot(payoffs, wealth_amount, bet_size):
+def plot_betting(payoffs, wealth_amount, bet_size):
     """
     Generate a plot to visualize the relationship between the fraction of starting wealth wagered
     and the ending wealth in the context of a betting scenario.
@@ -74,6 +74,10 @@ def betting_plot(payoffs, wealth_amount, bet_size):
     plt.text(bet_size / wealth_amount * 100, -0.05 * wealth_range[bet_size], f'{bet_size / wealth_amount * 100:.2f}%', ha='right', va='bottom')
     plt.text(bet_size / wealth_amount * 100 - 20, wealth_range[bet_size] + 0.05 * wealth_range[bet_size], f'${int(wealth_range[bet_size]):,}', ha='center', va='bottom', fontproperties=prop)
 
+    # Saving plot
+    plt.savefig('../plots/betting.png', dpi=300)
+
+    # Display the plot
     plt.show()
 
 def investment_recovery_plot(loss_value):
@@ -111,6 +115,9 @@ def investment_recovery_plot(loss_value):
     # Add text labels to the axes
     plt.text(loss_value + 5, -200, f'{loss_value}%', ha='right', va='bottom', color='black', fontsize=8)
     plt.text(-105, recovery_percent[1 - abs(loss_value)] - 40, f'{recovery_percent[1 - abs(loss_value)]:.2f}%', ha='right', va='bottom', color='black', fontsize=8)
+
+    # Saving plot
+    plt.savefig('../plots/investment_recovery', dpi=300)
 
     # Display the plot
     plt.show()

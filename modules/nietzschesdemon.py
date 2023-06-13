@@ -104,6 +104,9 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes)
     # Adjust spacing between subplots
     plt.subplots_adjust(wspace=0.05)
 
+    # Saving plot
+    plt.savefig('../plots/random_walk_frequency_distribution.png', dpi=300)
+
     # Display the plot
     plt.show()
 
@@ -136,6 +139,9 @@ def plot_random_walk_geom_average(num_walks, num_rolls, dice_outcomes):
 
     ax.set_xlabel('Geometric Average Return')
     ax.set_ylabel('Frequency')
+
+    # Saving plot
+    plt.savefig('../plots/random_walk_geom_average.png', dpi=300)
 
     # Display the plot
     plt.show()
