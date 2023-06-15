@@ -42,7 +42,7 @@ def _weighted_average(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     return np.array(weighted_averages)
 
 
-def _dice_distribution(ax, dice_outcomes):
+def _plot_dice_distribution(ax, dice_outcomes):
     """
     Plot the distribution of outcomes of a dice roll.
 
@@ -66,7 +66,7 @@ def _dice_distribution(ax, dice_outcomes):
     ax.set_title('Xs and Os Profile: The Kelly Criterion')
     ax.set_yticks(np.arange(min(counts), max(counts) + 1, 1))  # Set integer ticks on y-axis
 
-def _dice_outcome(ax, dice_outcomes, arith_dict, geom_dict):
+def _plot_dice_outcome(ax, dice_outcomes, arith_dict, geom_dict):
     """
     This function takes in an Axes object and an array of dice outcomes, and plots the winning probabilities
     based on the dice outcomes on the Axes.
@@ -107,7 +107,7 @@ def _dice_outcome(ax, dice_outcomes, arith_dict, geom_dict):
     ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_dice:.2f}%', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_dice:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _cash_outcome(ax, dice_outcomes, cash_outcomes, arith_dict, geom_dict):
+def _plot_cash_outcome(ax, dice_outcomes, cash_outcomes, arith_dict, geom_dict):
     """
     This function creates a subplot of cash outcomes based on the provided dice and cash outcomes.
 
@@ -157,7 +157,7 @@ def _cash_outcome(ax, dice_outcomes, cash_outcomes, arith_dict, geom_dict):
     ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_cash:.2f}%', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_cash:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict, geom_dict):
+def _plot_combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict, geom_dict):
     """
     This function plots the weighted average outcomes based on the provided ratio.
 
@@ -186,7 +186,7 @@ def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arit
     ax.set_ylim([-50, 100])
 
     # Set the y-axis label
-    ax.set_ylabel(f"{dice_to_cash_ratio[0] * 100} % Dice Roll and " + f"{dice_to_cash_ratio[1] * 100} % Cash")
+    ax.set_ylabel(f"{dice_to_cash_ratio[0] * 100} % Dice Roll & " + f"{dice_to_cash_ratio[1] * 100} % Cash")
 
     # Enable the grid
     ax.grid(True)
@@ -315,16 +315,16 @@ def plot_xo_profile(dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(4, 8))
 
     # Subplot 1: Distribution of dice outcomes
-    _dice_distribution(ax1, dice_outcomes)
+    _plot_dice_distribution(ax1, dice_outcomes)
 
     # Subplot 2: Height of dice outcome
-    _dice_outcome(ax2, dice_outcomes, arith_dict, geom_dict)
+    _plot_dice_outcome(ax2, dice_outcomes, arith_dict, geom_dict)
 
     # Subplot 3: Height of cash outcome
-    _cash_outcome(ax3, dice_outcomes, cash_outcomes, arith_dict, geom_dict)
+    _plot_cash_outcome(ax3, dice_outcomes, cash_outcomes, arith_dict, geom_dict)
 
     # Subplot 4: Height of combined outcome
-    _combined_outcome(ax4, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict, geom_dict)
+    _plot_combined_outcome(ax4, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict, geom_dict)
 
     # Adjust spacing between subplots
     plt.tight_layout()
@@ -360,7 +360,7 @@ def plot_kelly_optimal(dice_outcomes, cash_outcomes):
     max_ratio = ratios[geom_means.index(max_mean)]
     
     # Plotting the means
-    plt.figure(figsize=(10, 6))  # Create a new figure with specified size
+    plt.figure(figsize=(7, 3))  # Create a new figure with specified size
     plt.plot(ratios * 100, geom_means, label='Median')  # Plot geometric means
     plt.scatter(max_ratio * 100, max_mean)  # Mark the maximum with a scatter plot
     plt.text(max_ratio * 100, max_mean, f'Maximum at {max_ratio * 100}%')  # Add text indicating maximum
