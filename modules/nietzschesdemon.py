@@ -83,6 +83,9 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes)
     # Set logarithmic scale on the y-axis
     ax1.set_yscale('log')
 
+    # Set the y-axis limits
+    ax1.set_ylim([1e-12, 1e7])
+
     # Custom formatter for y-axis ticks
     def wealth_formatter(x, pos):
         if x >= 1:
@@ -100,6 +103,9 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes)
     ax2.set_ylabel('Geometric Average Return')
     ax2.yaxis.tick_right()
     ax2.yaxis.set_label_position("right")
+
+    # Set the y-axis limits
+    ax2.set_ylim([-8, 4.5])
 
     # Adjust spacing between subplots
     plt.subplots_adjust(wspace=0.05)
@@ -139,6 +145,9 @@ def plot_random_walk_geom_average(num_walks, num_rolls, dice_outcomes):
 
     ax.set_xlabel('Geometric Average Return')
     ax.set_ylabel('Frequency')
+
+    # Set the y-axis limits
+    ax.set_xlim([-8, 6])
 
     # Saving plot
     plt.savefig('../plots/random_walk_geom_average.png', dpi=300)
