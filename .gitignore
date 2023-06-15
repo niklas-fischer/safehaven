@@ -1,4 +1,8 @@
 # Exclude credentials from git
 credentials.*
 
+# Exclude caches
 modules/__pycache__
+
+# Exclude plots
+plots
