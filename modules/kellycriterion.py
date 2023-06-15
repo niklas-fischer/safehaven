@@ -211,6 +211,20 @@ def _combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arit
 # FUNCTIONS #
 #############
 
+def combined_outcomes(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
+    """
+    Calculate combined outcomes of a combined wager of dice and cash at a given ratio.
+
+    Args:
+    dice_outcomes (array-like): Dice outcomes
+    cash_outcomes (array-like): Cash outcomes
+    dice_to_cash_ratio (array-like): Ratio of dice to cash
+
+    Returns:
+    array-like: Array of combined outcomes
+    """
+    return dice_to_cash_ratio[0] * dice_outcomes + dice_to_cash_ratio[1] * cash_outcomes
+
 def weighted_arith_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     """
     Calculate arithmetic mean of a combined wager of dice and cash.
@@ -223,12 +237,6 @@ def weighted_arith_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     Returns:
     dict: Dictionary containing the calculated arithmetic means
     """
-
-    # Check if the input arrays are of the same length
-    assert len(dice_outcomes) == len(cash_outcomes), 'Arrays must be of the same length.'
-    
-    # Check if the sum of the ratio is equal to 1
-    assert np.isclose(np.sum(dice_to_cash_ratio), 1), 'Ratio must sum to 1.'
     
     # Calculate the arithmetic mean for dice and cash outcomes separately
     arith_mean_dice = (np.mean(dice_outcomes) - 1) * 100
