@@ -14,6 +14,7 @@ from scipy import stats
 # Visualization
 import matplotlib.font_manager as fm
 from matplotlib.ticker import FuncFormatter
+import matplotlib.ticker as ticker
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -69,7 +70,7 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes,
     walks, percentiles, median_walk, median_return, percentage_change = _dice_random_walk(num_walks, num_rolls, dice_outcomes)
 
     # Create the plot
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6), gridspec_kw={'width_ratios': [2, 1]})
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), gridspec_kw={'width_ratios': [2, 1]})
 
     # Plot random walks
     ax1.plot(range(num_rolls), walks.T, color='gray', alpha=0.3)
@@ -138,7 +139,7 @@ def plot_random_walk_geom_average(num_walks, num_rolls, dice_outcomes):
     _, _, _, median_return, percentage_change = _dice_random_walk(num_walks, num_rolls, dice_outcomes)
 
     # Create the plot
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(7, 3))
 
     # Plot the geometric mean as a vertical line
     ax.axvline(median_return, color='red', linestyle='--', label='Median')
@@ -167,6 +168,12 @@ def plot_random_walk_geom_average(num_walks, num_rolls, dice_outcomes):
 
     # Add legend
     ax.legend()
+
+    # Create a formatter that displays y-values with three decimal places
+    format_y = ticker.FuncFormatter(lambda x, pos: '{:.3f}'.format(x))
+    
+    # Apply the formatter to the y-axis
+    ax.yaxis.set_major_formatter(format_y)
 
     # Saving plot
     plt.savefig(f'../plots/random_walk_geom_average_{median_return:.2f}.png', dpi=300)
