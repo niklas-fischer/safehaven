@@ -6,10 +6,16 @@
 ############
 
 import numpy as np
-import matplotlib.pyplot as plt
+
+# Statistics
 from scipy.stats.mstats import gmean
+from scipy import stats
+
+# Visualization
 import matplotlib.font_manager as fm
 from matplotlib.ticker import FuncFormatter
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 ##############
 # FUNCTIIONS #
@@ -47,7 +53,7 @@ def _dice_random_walk(num_walks, num_rolls, dice_outcomes):
 
     return walks, percentiles, median_walk, median_return, percentage_change
 
-def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes):
+def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes, title):
     """
     Plot random walks of weighted dice rolls.
 
@@ -78,7 +84,7 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes)
     # Set axis labels and plot title
     ax1.set_xlabel('Rolls')
     ax1.set_ylabel('Ending Wealth')
-    ax1.set_title('You Get What You Get, Not What You Expect')
+    ax1.set_title(title)
 
     # Set logarithmic scale on the y-axis
     ax1.set_yscale('log')
@@ -111,7 +117,7 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes)
     plt.subplots_adjust(wspace=0.05)
 
     # Saving plot
-    plt.savefig('../plots/random_walk_frequency_distribution.png', dpi=300)
+    plt.savefig(f'../plots/random_walk_frequency_distribution_{median_return:.2f}.png', dpi=300)
 
     # Display the plot
     plt.show()
@@ -135,22 +141,35 @@ def plot_random_walk_geom_average(num_walks, num_rolls, dice_outcomes):
     fig, ax = plt.subplots(figsize=(10, 5))
 
     # Plot the geometric mean as a vertical line
-    ax.axvline(median_return, color='red', linestyle='--', label='Geometric Mean')
+    ax.axvline(median_return, color='red', linestyle='--', label='Median')
 
-    # Plot the histogram of percentage_change
-    bins = np.linspace(np.min(percentage_change), np.max(percentage_change), 30)
-    counts, bins, _ = ax.hist(percentage_change, bins=bins, orientation='vertical', color='lightgrey', alpha=0.7)
-    mid_points = (bins[:-1] + bins[1:]) / 2
-    ax.plot(mid_points, counts, color='black', linewidth=2)
+    # Create a KDE plot
+    sns.kdeplot(percentage_change, color='black', linewidth=2, ax=ax)
+
+    # Calculate 5th and 95th percentiles
+    lower_bound, upper_bound = np.percentile(percentage_change, [5, 95])
+
+    # Generate X values between lower and upper bound
+    x = np.linspace(lower_bound, upper_bound, 100)
+
+    # Get KDE for the generated X values
+    kde = stats.gaussian_kde(percentage_change)
+    y = kde(x)
+
+    # Fill between the KDE plot and the X-axis between the lower and upper bound
+    ax.fill_between(x, y, color='lightgrey', label='90% Interval')
 
     ax.set_xlabel('Geometric Average Return')
-    ax.set_ylabel('Frequency')
+    ax.set_ylabel('Density')
 
-    # Set the y-axis limits
+    # Set the x-axis limits
     ax.set_xlim([-8, 6])
 
+    # Add legend
+    ax.legend()
+
     # Saving plot
-    plt.savefig('../plots/random_walk_geom_average.png', dpi=300)
+    plt.savefig(f'../plots/random_walk_geom_average_{median_return:.2f}.png', dpi=300)
 
     # Display the plot
     plt.show()
