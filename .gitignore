@@ -1,8 +1,8 @@
-# Exclude credentials from git
-credentials.*
+# Exclude files
+credentials.* 
+test.ipynb
 
-# Exclude caches
+# Exclude folder
+plots
 modules/__pycache__
 
-# Exclude plots
-plots
