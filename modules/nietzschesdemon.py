@@ -18,9 +18,10 @@ import matplotlib.ticker as ticker
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-##############
-# FUNCTIIONS #
-##############
+
+####################
+# HELPER FUNCTIONS #
+####################
 
 def _dice_random_walk(num_walks, num_rolls, dice_outcomes):
     """
@@ -53,6 +54,10 @@ def _dice_random_walk(num_walks, num_rolls, dice_outcomes):
     percentage_change = (geometric_means - 1) * 100
 
     return walks, percentiles, median_walk, median_return, percentage_change
+
+#############
+# FUNCTIONS #
+#############
 
 def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes, title):
     """
