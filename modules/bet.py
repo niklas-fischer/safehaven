@@ -110,7 +110,7 @@ class BetComparison:
         self.__dict__[self.bet1_name] = bet1
         self.__dict__[self.bet2_name] = bet2
         self.ratio = ratio
-        self.arith_mean_combined, self.geom_mean_combined, self.cost, self.net = self.weighted_average()
+        self.arith_mean_combined, self.geom_mean_combined, self.cost, self.net, self.results = self.weighted_average()
 
     def weighted_average(self):
         """
@@ -126,14 +126,14 @@ class BetComparison:
         """
         
         # Combine the outcomes based on the given ratio and calculate the arithmetic mean
-        combined_outcomes = self.ratio[0] * self.__dict__[self.bet1_name].outcomes + self.ratio[1] * self.__dict__[self.bet2_name].outcomes
+        results = self.ratio[0] * self.__dict__[self.bet1_name].outcomes + self.ratio[1] * self.__dict__[self.bet2_name].outcomes
         
         # Calculate the arithmetic/geometric mean of the combined outcomes
-        arith_mean_combined = (np.mean(combined_outcomes) - 1) * 100
-        geom_mean_combined = (gmean(combined_outcomes) - 1) * 100
+        arith_mean_combined = (np.mean(results) - 1) * 100
+        geom_mean_combined = (gmean(results) - 1) * 100
         
         # Calculate the cost
         cost = arith_mean_combined - self.__dict__[self.bet1_name].arith_mean - self.__dict__[self.bet2_name].arith_mean
         net = geom_mean_combined - self.__dict__[self.bet1_name].geom_mean - self.__dict__[self.bet2_name].geom_mean
         
-        return arith_mean_combined, geom_mean_combined, cost, net
+        return arith_mean_combined, geom_mean_combined, cost, net, results
