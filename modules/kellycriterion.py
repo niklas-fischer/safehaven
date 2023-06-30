@@ -14,34 +14,6 @@ from scipy.stats import gmean
 # HELPER FUNCTIONS #
 ####################
 
-def _weighted_average(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
-    """
-    This function calculates the weighted average for each pair of values in the 
-    first two arrays based on the ratio in the third array.
-    
-    Arguments:
-    - dice_outcomes: A numpy array with the dice outcomes
-    - cash_outcomes: A numpy array with the cash outcomes
-    - dice_to_cash_ratio: A numpy array with two elements representing the weights for dice and cash
-    
-    Return:
-    - A numpy array with the weighted averages
-    """
-    
-     # Make sure all arrays have the same length
-    assert len(dice_outcomes) == len(cash_outcomes), "The first two arrays must have the same length"
-    assert len(dice_to_cash_ratio) == 2, "The ratio array must have exactly two elements"
-
-    dice_weight, cash_weight = dice_to_cash_ratio
-    weighted_averages = []
-
-    for dice, cash in zip(dice_outcomes, cash_outcomes):
-        weighted_average = dice * dice_weight + cash * cash_weight
-        weighted_averages.append(weighted_average)
-
-    return np.array(weighted_averages)
-
-
 def _plot_bet1_distribution(ax, bet1):
     """
     Plot the distribution of outcomes of a dice roll.
@@ -105,7 +77,6 @@ def _plot_bet_outcomes(ax, bet, marker):
     ax.text(0.02, 0.98, f'ARITHM AVG: {bet.arith_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {bet.geom_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-
 def _plot_combined_outcome(ax, bet_comparison):
     """
     This function plots the weighted average outcomes based on the provided ratio.
@@ -119,15 +90,6 @@ def _plot_combined_outcome(ax, bet_comparison):
     Returns:
     None
     """
-    # Calculate the weighted average of the outcomes
-    # weighted_avg_outcomes = _weighted_average(bet_comparison.bet1.outcomes, bet_comparison.bet2.outcomes, bet_comparison.ratio)
-    
-    # Convert outcomes to percentage probabilities
-    #win_probabilities = [(outcome - 1.0) * 100 for outcome in weighted_avg_outcomes]
-
-    # Convert outcomes to percentage categories for plotting
-    #categories = [str((outcome - 1) * 100) + "%" for outcome in weighted_avg_outcomes]
-
     # Calculate the winning probabilities based on the dice outcomes
     win_probabilities = [(result - 1) * 100 for result in bet_comparison.results]
 
@@ -172,8 +134,6 @@ def combined_outcomes(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     array-like: Array of combined outcomes
     """
     return dice_to_cash_ratio[0] * dice_outcomes + dice_to_cash_ratio[1] * cash_outcomes
-
-def weighted_arith_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     """
     Calculate arithmetic mean of a combined wager of dice and cash.
     
@@ -244,6 +204,10 @@ def weighted_geom_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
         'net': net
     }
     return geom_dict
+
+######### 
+# PLOTS #
+#########
 
 
 def plot_xo_profile(bet1, bet2, bet_comparison):
