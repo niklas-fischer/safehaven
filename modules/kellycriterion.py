@@ -42,7 +42,7 @@ def _weighted_average(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     return np.array(weighted_averages)
 
 
-def _plot_dice_distribution(ax, dice_outcomes):
+def _plot_bet1_distribution(ax, bet1):
     """
     Plot the distribution of outcomes of a dice roll.
 
@@ -52,21 +52,22 @@ def _plot_dice_distribution(ax, dice_outcomes):
     Returns:
     None
     """
-    # Calculate unique values and their counts
-    unique_values, counts = np.unique(dice_outcomes, return_counts=True)
+    # Values to percent
+    results_percent = [value * 100 for value in bet1.results]
+    results_percent_labels = [f'{value:.0f}%' for value in results_percent]
 
-    # Convert unique values to percentage and add % sign
-    unique_values = [(value - 1) * 100 for value in unique_values]
-    unique_values = [f'{value:.0f}% ' for value in unique_values]
+    # Bar Plot
+    ax.bar(results_percent_labels, bet1.weights, tick_label=results_percent_labels)
 
-    # Plot the bar chart
-    ax.bar(unique_values, counts)
-    ax.set_xlabel('--------------------------------------------------------------------------------')
-    ax.set_ylabel('Dice Roll Distribution')
+    # Setting labels and title
     ax.set_title('Xs and Os Profile: The Kelly Criterion')
-    ax.set_yticks(np.arange(min(counts), max(counts) + 1, 1))  # Set integer ticks on y-axis
+    ax.set_xlabel('--------------------------------------------------------------------------------')
+    ax.set_ylabel(bet1.name.title() +' Roll Distribution')
 
-def _plot_dice_outcome(ax, dice_outcomes, arith_dict, geom_dict):
+    # Set integer ticks on y-axis
+    ax.set_yticks(range(0, max(bet1.weights)+1))
+
+def _plot_bet1_outcomes(ax, bet1):
     """
     This function takes in an Axes object and an array of dice outcomes, and plots the winning probabilities
     based on the dice outcomes on the Axes.
@@ -79,10 +80,10 @@ def _plot_dice_outcome(ax, dice_outcomes, arith_dict, geom_dict):
     None
     """
     # Calculate the winning probabilities based on the dice outcomes
-    win_probabilities_dice = [(outcome - 1.0) * 100 for outcome in dice_outcomes]
+    win_probabilities_dice = [(outcome - 1.0) * 100 for outcome in bet1.outcomes]
 
     # Prepare the categories for the x-axis
-    categories_dice = [str((outcome - 1) * 100) + "%" for outcome in dice_outcomes]
+    categories_dice = [str((outcome - 1) * 100) + "%" for outcome in bet1.outcomes]
 
     # Plot the winning probabilities
     ax.plot(categories_dice, win_probabilities_dice, marker='x')  # 'x' marker is used
@@ -100,14 +101,14 @@ def _plot_dice_outcome(ax, dice_outcomes, arith_dict, geom_dict):
     ax.set_xticks([])
     
     # Get arithmetic and geometric mean of dice outcomes
-    arith_mean_dice = arith_dict.get('arith_mean_dice')
-    geom_mean_dice = geom_dict.get('geom_mean_dice')
+    arith_mean_bet1 = bet1.arith_mean
+    geom_mean_bet1 = bet1.geom_mean
 
     # Add annotations for arithmetic and geometric mean
-    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_dice:.2f}%', transform=ax.transAxes, verticalalignment='top')
-    ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_dice:.2f}%', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_bet1:.2f}%', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_bet1:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _plot_cash_outcome(ax, dice_outcomes, cash_outcomes, arith_dict, geom_dict):
+def _plot_bet2_outcomes(ax, bet2):
     """
     This function creates a subplot of cash outcomes based on the provided dice and cash outcomes.
 
@@ -120,10 +121,10 @@ def _plot_cash_outcome(ax, dice_outcomes, cash_outcomes, arith_dict, geom_dict):
     None
     """
     # Determine the number of unique categories based on dice outcomes
-    n_categories = len(np.unique(dice_outcomes))
+    n_categories = len(np.unique(bet2.outcomes))
 
     # Reshape cash outcomes according to the number of categories
-    cash_outcomes_reshaped = np.array_split(cash_outcomes, n_categories)
+    cash_outcomes_reshaped = np.array_split(bet_comparison.bet2.outcomes, n_categories)
 
     # Calculate the winning probabilities for cash outcomes
     win_probabilities_cash = [(np.mean(outcome) - 1.0) * 100 for outcome in cash_outcomes_reshaped]
@@ -150,14 +151,14 @@ def _plot_cash_outcome(ax, dice_outcomes, cash_outcomes, arith_dict, geom_dict):
     ax.set_xticks([])
 
     # Calculate the arithmetic and geometric mean of the dice outcomes
-    arith_mean_cash = arith_dict.get('arith_mean_cash')
-    geom_mean_cash = geom_dict.get('geom_mean_cash')
+    arith_mean_bet2 = bet_comparison.bet2.arith_mean
+    geom_mean_bet2 = bet_comparison.be2.geom_mean
 
     # Add annotations for arithmetic and geometric mean
-    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_cash:.2f}%', transform=ax.transAxes, verticalalignment='top')
-    ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_cash:.2f}%', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_bet2:.2f}%', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_bet2:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _plot_combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict, geom_dict):
+def _plot_combined_outcome(ax, bet_comparison):
     """
     This function plots the weighted average outcomes based on the provided ratio.
 
@@ -171,7 +172,7 @@ def _plot_combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio,
     None
     """
     # Calculate the weighted average of the outcomes
-    weighted_avg_outcomes = _weighted_average(dice_outcomes, cash_outcomes, dice_to_cash_ratio)
+    weighted_avg_outcomes = _weighted_average(bet_comparison.bet1.outcomes, bet_comparison.bet2.outcomes, bet_comparison.ratio)
     
     # Convert outcomes to percentage probabilities
     win_probabilities_weighted = [(outcome - 1.0) * 100 for outcome in weighted_avg_outcomes]
@@ -186,7 +187,7 @@ def _plot_combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio,
     ax.set_ylim([-50, 100])
 
     # Set the y-axis label
-    ax.set_ylabel(f"{dice_to_cash_ratio[0] * 100} % Dice Roll & " + f"{dice_to_cash_ratio[1] * 100} % Cash")
+    ax.set_ylabel(f"{bet_comparison.ratio[0] * 100} % Dice Roll & " + f"{bet_comparison.ratio[1] * 100} % Cash")
 
     # Enable the grid
     ax.grid(True)
@@ -195,11 +196,11 @@ def _plot_combined_outcome(ax, dice_outcomes, cash_outcomes, dice_to_cash_ratio,
     ax.set_xticks([])
 
     # Calculate the arithmetic and geometric mean of the dice outcomes
-    arith_mean_combined = arith_dict.get('arith_mean_combined')
-    geom_mean_combined = geom_dict.get('geom_mean_combined')
+    arith_mean_combined = bet_comparison.arith_mean_combined
+    geom_mean_combined = bet_comparison.geom_mean_combined
 
-    cost = arith_dict.get('cost')
-    net = geom_dict.get('net')
+    cost = bet_comparison.cost
+    net = bet_comparison.net
 
     # Add annotations for arithmetic and geometric mean
     #ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_combined:.2f}%' + f' (Cost: {cost:.2f}%)', transform=ax.transAxes, verticalalignment='top')
@@ -239,7 +240,7 @@ def weighted_arith_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     """
     
     # Calculate the arithmetic mean for dice and cash outcomes separately
-    arith_mean_dice = (np.mean(dice_outcomes) - 1) * 100
+    arith_mean_bet1 = (np.mean(dice_outcomes) - 1) * 100
     arith_mean_cash = (np.mean(cash_outcomes) - 1) * 100
     
     # Combine the outcomes based on the given ratio and calculate the arithmetic mean
@@ -247,11 +248,11 @@ def weighted_arith_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     arith_mean_combined = (np.mean(combined_outcomes) - 1) * 100
     
     # Calculate the cost
-    cost = arith_mean_combined - arith_mean_dice - arith_mean_cash
+    cost = arith_mean_combined - arith_mean_bet1 - arith_mean_cash
     
     # Return a dictionary containing the calculated means
     arith_dict = {
-        'arith_mean_dice': arith_mean_dice,
+        'arith_mean_bet1': arith_mean_bet1,
         'arith_mean_cash': arith_mean_cash,
         'arith_mean_combined': arith_mean_combined,
         'cost': cost
@@ -298,7 +299,7 @@ def weighted_geom_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     return geom_dict
 
 
-def plot_xo_profile(dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict, geom_dict):
+def plot_xo_profile(bet1, bet2, bet_comparison):
     """
     This function calculates the weighted average for each pair of values in the 
     first two arrays based on the ratio in the third array.
@@ -314,17 +315,17 @@ def plot_xo_profile(dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict
     # Create a figure with 4 subplots
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(4, 8))
 
-    # Subplot 1: Distribution of dice outcomes
-    _plot_dice_distribution(ax1, dice_outcomes)
+    # Subplot 1: Distribution of bet1 outcomes
+    _plot_bet1_distribution(ax1, bet1)
 
-    # Subplot 2: Height of dice outcome
-    _plot_dice_outcome(ax2, dice_outcomes, arith_dict, geom_dict)
+    # Subplot 2: Height of bet2 outcome
+    _plot_bet1_outcomes(ax2, bet1)
 
-    # Subplot 3: Height of cash outcome
-    _plot_cash_outcome(ax3, dice_outcomes, cash_outcomes, arith_dict, geom_dict)
+    # Subplot 3: Height of bet2 outcome
+    _plot_bet1_outcomes(ax3, bet2)
 
     # Subplot 4: Height of combined outcome
-    _plot_combined_outcome(ax4, dice_outcomes, cash_outcomes, dice_to_cash_ratio, arith_dict, geom_dict)
+    #_plot_combined_outcome(ax4, bet_comparison)
 
     # Adjust spacing between subplots
     plt.tight_layout()
