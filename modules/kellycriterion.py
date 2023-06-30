@@ -53,7 +53,7 @@ def _plot_bet1_distribution(ax, bet1):
     None
     """
     # Values to percent
-    results_percent = [value * 100 for value in bet1.results]
+    results_percent = [(value - 1)* 100 for value in bet1.results]
     results_percent_labels = [f'{value:.0f}%' for value in results_percent]
 
     # Bar Plot
@@ -67,7 +67,7 @@ def _plot_bet1_distribution(ax, bet1):
     # Set integer ticks on y-axis
     ax.set_yticks(range(0, max(bet1.weights)+1))
 
-def _plot_bet1_outcomes(ax, bet1):
+def _plot_bet_outcomes(ax, bet, marker):
     """
     This function takes in an Axes object and an array of dice outcomes, and plots the winning probabilities
     based on the dice outcomes on the Axes.
@@ -80,83 +80,35 @@ def _plot_bet1_outcomes(ax, bet1):
     None
     """
     # Calculate the winning probabilities based on the dice outcomes
-    win_probabilities_dice = [(outcome - 1.0) * 100 for outcome in bet1.outcomes]
+    win_probabilities = [(result - 1) * 100 for result in bet.results]
 
     # Prepare the categories for the x-axis
-    categories_dice = [str((outcome - 1) * 100) + "%" for outcome in bet1.outcomes]
-
+    categories = [str(int((result - 1) * 100)) + "%" for i, result in enumerate(bet.results)]
+  
     # Plot the winning probabilities
-    ax.plot(categories_dice, win_probabilities_dice, marker='x')  # 'x' marker is used
+    ax.plot(range(len(bet.results)), win_probabilities, marker=marker)  # 'x' marker is used
 
     # Set the limits for the y-axis
     ax.set_ylim([-50, 100])  # the limits are set from -50 to 100
 
     # Set the label for the y-axis
-    ax.set_ylabel("Dice Roll")  # the y-axis is labeled as "[dice_name] Roll"
+    ax.set_ylabel(bet.name.title() + " Roll")  # the y-axis is labeled as "[bet_name] Roll"
 
     # Enable the grid
     ax.grid(True)
 
-    # Remove x-axis labels
-    ax.set_xticks([])
-    
+    # Set the labels for the x-axis
+    ax.set_xticks(range(len(bet.results)))
+    ax.set_xticklabels(categories)
+
     # Get arithmetic and geometric mean of dice outcomes
-    arith_mean_bet1 = bet1.arith_mean
-    geom_mean_bet1 = bet1.geom_mean
+    arith_mean_bet1 = bet.arith_mean
+    geom_mean_bet1 = bet.geom_mean
 
     # Add annotations for arithmetic and geometric mean
     ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_bet1:.2f}%', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_bet1:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _plot_bet2_outcomes(ax, bet2):
-    """
-    This function creates a subplot of cash outcomes based on the provided dice and cash outcomes.
-
-    Arguments:
-    - ax: A matplotlib.axes.Axes object. The plot will be drawn on this Axes.
-    - dice_outcomes: A numpy array with the dice outcomes
-    - cash_outcomes: A numpy array with the cash outcomes
-
-    Return:
-    None
-    """
-    # Determine the number of unique categories based on dice outcomes
-    n_categories = len(np.unique(bet2.outcomes))
-
-    # Reshape cash outcomes according to the number of categories
-    cash_outcomes_reshaped = np.array_split(bet_comparison.bet2.outcomes, n_categories)
-
-    # Calculate the winning probabilities for cash outcomes
-    win_probabilities_cash = [(np.mean(outcome) - 1.0) * 100 for outcome in cash_outcomes_reshaped]
-
-    # Create categories for cash outcomes
-    categories_cash = [str(i+1) for i, _ in enumerate(cash_outcomes_reshaped)]
-
-    # Create a plot with 'o' as a marker
-    ax.plot(categories_cash, win_probabilities_cash, marker='o')
-
-    # Set the limit for the y-axis
-    ax.set_ylim([-50, 100])
-
-    # Set the label for the y-axis
-    ax.set_ylabel("Cash")
-
-    # Set the x-axis label
-    ax.set_xlabel('=====================================================================================')
-
-    # Enable grid
-    ax.grid(True)
-
-    # Remove x-axis labels
-    ax.set_xticks([])
-
-    # Calculate the arithmetic and geometric mean of the dice outcomes
-    arith_mean_bet2 = bet_comparison.bet2.arith_mean
-    geom_mean_bet2 = bet_comparison.be2.geom_mean
-
-    # Add annotations for arithmetic and geometric mean
-    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_bet2:.2f}%', transform=ax.transAxes, verticalalignment='top')
-    ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_bet2:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
 def _plot_combined_outcome(ax, bet_comparison):
     """
@@ -319,10 +271,10 @@ def plot_xo_profile(bet1, bet2, bet_comparison):
     _plot_bet1_distribution(ax1, bet1)
 
     # Subplot 2: Height of bet2 outcome
-    _plot_bet1_outcomes(ax2, bet1)
+    _plot_bet_outcomes(ax2, bet1, 'x')
 
     # Subplot 3: Height of bet2 outcome
-    _plot_bet1_outcomes(ax3, bet2)
+    _plot_bet_outcomes(ax3, bet2, 'o')
 
     # Subplot 4: Height of combined outcome
     #_plot_combined_outcome(ax4, bet_comparison)
