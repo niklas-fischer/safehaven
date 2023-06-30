@@ -101,13 +101,9 @@ def _plot_bet_outcomes(ax, bet, marker):
     ax.set_xticks(range(len(bet.results)))
     ax.set_xticklabels(categories)
 
-    # Get arithmetic and geometric mean of dice outcomes
-    arith_mean_bet1 = bet.arith_mean
-    geom_mean_bet1 = bet.geom_mean
-
     # Add annotations for arithmetic and geometric mean
-    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_bet1:.2f}%', transform=ax.transAxes, verticalalignment='top')
-    ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_bet1:.2f}%', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.98, f'ARITHM AVG: {bet.arith_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.88, f'GEOM AVG: {bet.geom_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
 
 def _plot_combined_outcome(ax, bet_comparison):
@@ -124,16 +120,22 @@ def _plot_combined_outcome(ax, bet_comparison):
     None
     """
     # Calculate the weighted average of the outcomes
-    weighted_avg_outcomes = _weighted_average(bet_comparison.bet1.outcomes, bet_comparison.bet2.outcomes, bet_comparison.ratio)
+    # weighted_avg_outcomes = _weighted_average(bet_comparison.bet1.outcomes, bet_comparison.bet2.outcomes, bet_comparison.ratio)
     
     # Convert outcomes to percentage probabilities
-    win_probabilities_weighted = [(outcome - 1.0) * 100 for outcome in weighted_avg_outcomes]
+    #win_probabilities = [(outcome - 1.0) * 100 for outcome in weighted_avg_outcomes]
 
     # Convert outcomes to percentage categories for plotting
-    categories_weighted = [str((outcome - 1) * 100) + "%" for outcome in weighted_avg_outcomes]
+    #categories = [str((outcome - 1) * 100) + "%" for outcome in weighted_avg_outcomes]
+
+    # Calculate the winning probabilities based on the dice outcomes
+    win_probabilities = [(result - 1) * 100 for result in bet_comparison.results]
+
+    # Prepare the categories for the x-axis
+    categories = [str(int((result - 1) * 100)) + "%" for i, result in enumerate(bet_comparison.results)]
 
     # Plot the weighted average outcomes
-    ax.plot(categories_weighted, win_probabilities_weighted, marker='^')
+    ax.plot(categories, win_probabilities, marker='^')
 
     # Set the y-axis limits
     ax.set_ylim([-50, 100])
@@ -147,18 +149,11 @@ def _plot_combined_outcome(ax, bet_comparison):
     # Remove x-axis labels
     ax.set_xticks([])
 
-    # Calculate the arithmetic and geometric mean of the dice outcomes
-    arith_mean_combined = bet_comparison.arith_mean_combined
-    geom_mean_combined = bet_comparison.geom_mean_combined
-
-    cost = bet_comparison.cost
-    net = bet_comparison.net
-
     # Add annotations for arithmetic and geometric mean
     #ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_combined:.2f}%' + f' (Cost: {cost:.2f}%)', transform=ax.transAxes, verticalalignment='top')
     # ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_combined:.2f}%' + f' (Net: +{net:.2f}%)', transform=ax.transAxes, verticalalignment='top')
-    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean_combined:.2f}%' + f' (Cost: {cost:.2f}%)', transform=ax.transAxes, verticalalignment='top')
-    ax.text(0.02, 0.88, f'GEOM AVG: {geom_mean_combined:.2f}%' + f' (Net: {net:.2f}%)', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.98, f'ARITHM AVG: {bet_comparison.arith_mean_combined:.2f}%' + f' (Cost: {bet_comparison.cost:.2f}%)', transform=ax.transAxes, verticalalignment='top')
+    ax.text(0.02, 0.88, f'GEOM AVG: {bet_comparison.geom_mean_combined:.2f}%' + f' (Net: {bet_comparison.net:.2f}%)', transform=ax.transAxes, verticalalignment='top')
 
 ############# 
 # FUNCTIONS #
@@ -277,7 +272,7 @@ def plot_xo_profile(bet1, bet2, bet_comparison):
     _plot_bet_outcomes(ax3, bet2, 'o')
 
     # Subplot 4: Height of combined outcome
-    #_plot_combined_outcome(ax4, bet_comparison)
+    _plot_combined_outcome(ax4, bet_comparison)
 
     # Adjust spacing between subplots
     plt.tight_layout()
