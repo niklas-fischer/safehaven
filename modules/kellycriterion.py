@@ -134,81 +134,11 @@ def combined_outcomes(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
     array-like: Array of combined outcomes
     """
     return dice_to_cash_ratio[0] * dice_outcomes + dice_to_cash_ratio[1] * cash_outcomes
-    """
-    Calculate arithmetic mean of a combined wager of dice and cash.
-    
-    Args:
-    dice_outcomes (array-like): Dice outcomes
-    cash_outcomes (array-like): Cash outcomes
-    dice_to_cash_ratio (array-like): Ratio of dice to cash
-    
-    Returns:
-    dict: Dictionary containing the calculated arithmetic means
-    """
-    
-    # Calculate the arithmetic mean for dice and cash outcomes separately
-    arith_mean_bet1 = (np.mean(dice_outcomes) - 1) * 100
-    arith_mean_cash = (np.mean(cash_outcomes) - 1) * 100
-    
-    # Combine the outcomes based on the given ratio and calculate the arithmetic mean
-    combined_outcomes = dice_to_cash_ratio[0] * dice_outcomes + dice_to_cash_ratio[1] * cash_outcomes
-    arith_mean_combined = (np.mean(combined_outcomes) - 1) * 100
-    
-    # Calculate the cost
-    cost = arith_mean_combined - arith_mean_bet1 - arith_mean_cash
-    
-    # Return a dictionary containing the calculated means
-    arith_dict = {
-        'arith_mean_bet1': arith_mean_bet1,
-        'arith_mean_cash': arith_mean_cash,
-        'arith_mean_combined': arith_mean_combined,
-        'cost': cost
-    }
-    return arith_dict
 
-def weighted_geom_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
-    """
-    Calculate geometric mean of a combined wager of dice and cash.
-    
-    Args:
-    dice_outcomes (array-like): Dice outcomes
-    cash_outcomes (array-like): Cash outcomes
-    dice_to_cash_ratio (array-like): Ratio of dice to cash
-    
-    Returns:
-    dict: Dictionary containing the calculated geometric means
-    """
-    
-    # Check if the input arrays are of the same length
-    assert len(dice_outcomes) == len(cash_outcomes), 'Arrays must be of the same length.'
-    
-    # Check if the sum of the ratio is equal to 1
-    assert np.isclose(np.sum(dice_to_cash_ratio), 1), 'Ratio must sum to 1.'
-    
-    # Calculate the geometric mean for dice and cash outcomes separately
-    geom_mean_dice = (gmean(dice_outcomes) - 1) * 100
-    geom_mean_cash = (gmean(cash_outcomes) - 1) * 100
-    
-    # Combine the outcomes based on the given ratio and calculate the geometric mean
-    combined_outcomes = dice_to_cash_ratio[0] * dice_outcomes + dice_to_cash_ratio[1] * cash_outcomes
-    geom_mean_combined = (gmean(combined_outcomes) - 1) * 100
-    
-    # Calculate the net
-    net = geom_mean_combined - geom_mean_dice - geom_mean_cash
-    
-    # Return a dictionary containing the calculated means
-    geom_dict = {
-        'geom_mean_dice': geom_mean_dice,
-        'geom_mean_cash': geom_mean_cash,
-        'geom_mean_combined': geom_mean_combined,
-        'net': net
-    }
-    return geom_dict
 
 ######### 
 # PLOTS #
 #########
-
 
 def plot_xo_profile(bet1, bet2, bet_comparison):
     """
@@ -263,9 +193,9 @@ def plot_kelly_optimal(dice_outcomes, cash_outcomes):
         # Create ratio array for dice and cash
         dice_to_cash_ratio = np.array([ratio, 1-ratio])
         # Calculate geometric means
-        geom_dict = weighted_geom_mean(dice_outcomes, cash_outcomes, dice_to_cash_ratio)
+        geom_mean = (gmean(combined_outcomes(dice_outcomes, cash_outcomes, dice_to_cash_ratio)) - 1) * 100
         # Append geometric mean of combined outcomes to the list
-        geom_means.append(geom_dict['geom_mean_combined'])
+        geom_means.append(geom_mean)
     
     # Find the maximum mean and its corresponding ratio
     max_mean = max(geom_means)
