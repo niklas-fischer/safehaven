@@ -128,23 +128,23 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes,
     # Display the plot
     plt.show()
 
-def plot_random_walk_geom_average(num_walks, num_rolls, dice_outcomes):
+def plot_random_walk_geom_average(num_walks, num_rolls, Bet, title):
     """
     Plot random walks of weighted dice rolls.
 
     Arguments:
     - num_walks: Number of random walks to perform
     - num_rolls: Number of rolls per walk
-    - dice_outcomes: Array of dice outcomes
+    - bet: Instance of Bet object
 
     Returns:
     None
     """
     # Use dice_random_walk() to calculate the median_return and percentage_change.
-    _, _, _, median_return, percentage_change = _dice_random_walk(num_walks, num_rolls, dice_outcomes)
+    _, _, _, median_return, percentage_change = _dice_random_walk(num_walks, num_rolls, Bet.outcomes)
 
     # Create the plot
-    fig, ax = plt.subplots(figsize=(7, 3))
+    fig, ax = plt.subplots(figsize=(5, 2))
 
     # Plot the geometric mean as a vertical line
     ax.axvline(median_return, color='red', linestyle='--', label='Median')
@@ -166,7 +166,7 @@ def plot_random_walk_geom_average(num_walks, num_rolls, dice_outcomes):
     ax.fill_between(x, y, color='lightgrey', label='90% Interval')
 
     ax.set_xlabel('Geometric Average Return')
-    ax.set_ylabel('Density')
+    ax.set_ylabel(title)
 
     # Set the x-axis limits
     ax.set_xlim([-8, 6])
