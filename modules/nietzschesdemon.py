@@ -174,11 +174,8 @@ def plot_random_walk_geom_average(num_walks, num_rolls, Bet, title):
     # Add legend
     ax.legend()
 
-    # Create a formatter that displays y-values with three decimal places
-    format_y = ticker.FuncFormatter(lambda x, pos: '{:.3f}'.format(x))
-    
-    # Apply the formatter to the y-axis
-    ax.yaxis.set_major_formatter(format_y)
+    # Remove y axis ticks
+    ax.set_yticks([])
 
     # Saving plot
     plt.savefig(f'../plots/random_walk_geom_average_{median_return:.2f}.png', dpi=300)
