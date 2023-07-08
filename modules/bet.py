@@ -134,6 +134,6 @@ class BetComparison:
         
         # Calculate the cost
         cost = arith_mean_combined - self.__dict__[self.bet1_name].arith_mean - self.__dict__[self.bet2_name].arith_mean
-        net = geom_mean_combined - self.__dict__[self.bet1_name].geom_mean - self.__dict__[self.bet2_name].geom_mean
+        net = geom_mean_combined - self.__dict__[self.bet1_name].geom_mean 
         
         return arith_mean_combined, geom_mean_combined, cost, net, results
