@@ -14,7 +14,7 @@ from scipy.stats import gmean
 # HELPER FUNCTIONS #
 ####################
 
-def _plot_bet1_distribution(ax, bet1):
+def _plot_bet1_distribution(ax, bet1, title):
     """
     Plot the distribution of outcomes of a dice roll.
 
@@ -32,9 +32,9 @@ def _plot_bet1_distribution(ax, bet1):
     ax.bar(results_percent_labels, bet1.weights, tick_label=results_percent_labels)
 
     # Setting labels and title
-    ax.set_title('Xs and Os Profile: The Kelly Criterion')
+    ax.set_title('Xs and Os Profile: ' + title)
     ax.set_xlabel('--------------------------------------------------------------------------------')
-    ax.set_ylabel(bet1.name.title() +' Roll Distribution')
+    ax.set_ylabel(bet1.name.title() +' Distribution')
 
     # Set integer ticks on y-axis
     ax.set_yticks(range(0, max(bet1.weights)+1))
@@ -58,13 +58,13 @@ def _plot_bet_outcomes(ax, bet, marker):
     categories = [str(int((result - 1) * 100)) + "%" for i, result in enumerate(bet.results)]
   
     # Plot the winning probabilities
-    ax.plot(range(len(bet.results)), win_probabilities, marker=marker)  # 'x' marker is used
+    ax.plot(range(len(bet.results)), win_probabilities, marker=marker)  
 
     # Set the limits for the y-axis
-    ax.set_ylim([-50, 100])  # the limits are set from -50 to 100
+    ax.set_ylim([min(win_probabilities) - 50, max(win_probabilities) + 50]) # Setting ylim dynamic to show whole graph
 
     # Set the label for the y-axis
-    ax.set_ylabel(bet.name.title() + " Roll")  # the y-axis is labeled as "[bet_name] Roll"
+    ax.set_ylabel(bet.name.title())  # the y-axis is labeled as "[bet_name] Roll"
 
     # Enable the grid
     ax.grid(True)
@@ -103,7 +103,7 @@ def _plot_combined_outcome(ax, bet_comparison):
     ax.set_ylim([-50, 100])
 
     # Set the y-axis label
-    ax.set_ylabel(f"{bet_comparison.ratio[0] * 100} % Dice Roll & " + f"{bet_comparison.ratio[1] * 100} % Cash")
+    ax.set_ylabel(f"{bet_comparison.ratio[0] * 100} % {bet_comparison.bet1_name.title()} &\n {bet_comparison.ratio[1] * 100} % {bet_comparison.bet2_name.title()}")
 
     # Enable the grid
     ax.grid(True)
@@ -140,7 +140,7 @@ def combined_outcomes(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
 # PLOTS #
 #########
 
-def plot_xo_profile(bet1, bet2, bet_comparison):
+def plot_xo_profile(bet1, bet2, bet_comparison, title):
     """
     This function calculates the weighted average for each pair of values in the 
     first two arrays based on the ratio in the third array.
@@ -157,7 +157,7 @@ def plot_xo_profile(bet1, bet2, bet_comparison):
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(4, 8))
 
     # Subplot 1: Distribution of bet1 outcomes
-    _plot_bet1_distribution(ax1, bet1)
+    _plot_bet1_distribution(ax1, bet1, title)
 
     # Subplot 2: Height of bet2 outcome
     _plot_bet_outcomes(ax2, bet1, 'x')
