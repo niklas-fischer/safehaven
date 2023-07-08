@@ -91,10 +91,10 @@ def _plot_combined_outcome(ax, bet_comparison):
     None
     """
     # Calculate the winning probabilities based on the dice outcomes
-    win_probabilities = [(result - 1) * 100 for result in bet_comparison.results]
+    win_probabilities = [(result - 1) * 100 for result in bet_comparison.outcomes]
 
     # Prepare the categories for the x-axis
-    categories = [str(int((result - 1) * 100)) + "%" for i, result in enumerate(bet_comparison.results)]
+    categories = [str(int((result - 1) * 100)) + "%" for i, result in enumerate(bet_comparison.outcomes)]
 
     # Plot the weighted average outcomes
     ax.plot(categories, win_probabilities, marker='^')

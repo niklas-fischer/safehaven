@@ -110,7 +110,7 @@ class BetComparison:
         self.__dict__[self.bet1_name] = bet1
         self.__dict__[self.bet2_name] = bet2
         self.ratio = ratio
-        self.arith_mean_combined, self.geom_mean_combined, self.cost, self.net, self.results = self.weighted_average()
+        self.arith_mean_combined, self.geom_mean_combined, self.cost, self.net, self.outcomes = self.weighted_average()
 
     def weighted_average(self):
         """
