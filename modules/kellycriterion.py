@@ -19,7 +19,7 @@ def _plot_bet1_distribution(ax, bet1, title):
     Plot the distribution of outcomes of a dice roll.
 
     Arguments:
-    - dice_outcomes: Array of dice outcomes
+    - bet1_outcomes: Array of dice outcomes
 
     Returns:
     None
@@ -46,7 +46,7 @@ def _plot_bet_outcomes(ax, bet, marker):
 
     Arguments:
     - ax: An Axes object where the plot will be drawn
-    - dice_outcomes: An array containing the outcomes of dice rolls
+    - bet1_outcomes: An array containing the outcomes of dice rolls
 
     Returns:
     None
@@ -83,8 +83,8 @@ def _plot_combined_outcome(ax, bet_comparison):
 
     Arguments:
     - ax: The subplot axis to draw on
-    - dice_outcomes: A numpy array with the dice outcomes
-    - cash_outcomes: A numpy array with the cash outcomes
+    - bet1_outcomes: A numpy array with the dice outcomes
+    - bet2_outcomes: A numpy array with the cash outcomes
     - dice_to_cash_ratio: A numpy array with two elements representing the weights for dice and cash
 
     Returns:
@@ -121,19 +121,19 @@ def _plot_combined_outcome(ax, bet_comparison):
 # FUNCTIONS #
 #############
 
-def combined_outcomes(dice_outcomes, cash_outcomes, dice_to_cash_ratio):
+def combined_outcomes(bet1_outcomes, bet2_outcomes, dice_to_cash_ratio):
     """
     Calculate combined outcomes of a combined wager of dice and cash at a given ratio.
 
     Args:
-    dice_outcomes (array-like): Dice outcomes
-    cash_outcomes (array-like): Cash outcomes
+    bet1_outcomes (array-like): Dice outcomes
+    bet2_outcomes (array-like): Cash outcomes
     dice_to_cash_ratio (array-like): Ratio of dice to cash
 
     Returns:
     array-like: Array of combined outcomes
     """
-    return dice_to_cash_ratio[0] * dice_outcomes + dice_to_cash_ratio[1] * cash_outcomes
+    return dice_to_cash_ratio[0] * bet1_outcomes + dice_to_cash_ratio[1] * bet2_outcomes
 
 
 ######### 
@@ -146,8 +146,8 @@ def plot_xo_profile(bet1, bet2, bet_comparison, title):
     first two arrays based on the ratio in the third array.
 
     Arguments:
-    - dice_outcomes: A numpy array with the dice outcomes
-    - cash_outcomes: A numpy array with the cash outcomes
+    - bet1_outcomes: A numpy array with the dice outcomes
+    - bet2_outcomes: A numpy array with the cash outcomes
     - dice_to_cash_ratio: A numpy array with two elements representing the weights for dice and cash
 
     Return:
@@ -174,15 +174,15 @@ def plot_xo_profile(bet1, bet2, bet_comparison, title):
     # Saving plot
     plt.savefig('../plots/xo_profile.png', dpi=300)
 
-def plot_kelly_optimal(dice_outcomes, cash_outcomes):
+def plot_kelly_optimal(bet1_outcomes, bet2_outcomes):
     """
     This function takes dice and cash outcomes and plots the geometric mean 
     as a function of the fraction of wealth wagered per roll, thus visualising 
     the optimal Kelly bet size.
     
     Args:
-    dice_outcomes (numpy array): Array of dice outcomes.
-    cash_outcomes (numpy array): Array of cash outcomes.
+    bet1_outcomes (numpy array): Array of Bet outcomes.
+    bet2_outcomes (numpy array): Array of another Bet outcomes.
     """
     # Define ratios ranging from 0 to 1 in steps of 0.01
     ratios = np.arange(0, 1.01, 0.01)
@@ -193,7 +193,7 @@ def plot_kelly_optimal(dice_outcomes, cash_outcomes):
         # Create ratio array for dice and cash
         dice_to_cash_ratio = np.array([ratio, 1-ratio])
         # Calculate geometric means
-        geom_mean = (gmean(combined_outcomes(dice_outcomes, cash_outcomes, dice_to_cash_ratio)) - 1) * 100
+        geom_mean = (gmean(combined_outcomes(bet1_outcomes, bet2_outcomes, dice_to_cash_ratio)) - 1) * 100
         # Append geometric mean of combined outcomes to the list
         geom_means.append(geom_mean)
     
