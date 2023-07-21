@@ -182,3 +182,63 @@ def plot_random_walk_geom_average(num_walks, num_rolls, Bet, title):
 
     # Display the plot
     plt.show()
+
+def plot_median_growth(ratio, bet1, bet2, kelly_payoff, step_size=-0.001):
+    """
+    Creates a plot for the expected or median geometric return of an aggregate strategy corresponding 
+    to different arithmetic returns of the standalone insurance side bet.
+    
+    Parameters:
+    ratio: numpy array representing the ratio for calculations.
+    bet1: numpy array representing the first bet for calculations.
+    bet2: numpy array representing the second bet for calculations, the first value is the starting point for the iterations.
+    kelly_payoff: float representing the value for the horizontal 'Kelly Payoff' line.
+    step_size: float representing the step size for the iterations, default is -0.001.
+    """
+
+    x_values = [] # List for X-axis values
+    y_values = [] # List for Y-axis values
+
+    # Start with bet2[0] and iterate downwards by step_size
+    for i in np.arange(bet2[0], 0.0, step_size): 
+        bet2_iterating = bet2.copy()
+        bet2_iterating[0] = i
+        results = ratio[0] * bet1 + ratio[1] * bet2_iterating
+
+        # Calculate the arithmetic/geometric mean of the combined outcomes
+        arith_mean_bet2 = (np.mean(bet2_iterating) - 1) * 100
+        geom_mean_combined = (gmean(results) - 1) * 100
+
+        # Add the values to the lists
+        x_values.append(arith_mean_bet2)
+        y_values.append(geom_mean_combined)
+
+        # End the loop when the geometric mean falls below 0%
+        if geom_mean_combined < 0:
+            break
+
+    # Find intersection point
+    intersect_idx = np.where(np.diff(np.sign(np.array(y_values) - kelly_payoff)))[0]
+    intersect_x = x_values[intersect_idx[0]]
+    intersect_y = y_values[intersect_idx[0]]
+
+    # Create the plot
+    fig, ax1 = plt.subplots()
+
+    ax1.plot(x_values, y_values, label='Insurance Payoff')
+    ax1.axhline(y=kelly_payoff, color='grey', linestyle='--', label='Kelly Payoff')
+    ax1.scatter(intersect_x, intersect_y) # mark the intersection point
+    ax1.set_xlabel('Standalone Insurance Payoff - Arithmetic Average Return')
+    ax1.set_ylabel('Insurance Strategy - Geometric Average Return', rotation=270, labelpad=15)
+    ax1.yaxis.tick_right()
+    ax1.yaxis.set_label_position("right")
+
+    # Create a percentage formatter function and apply it to the x and y axis
+    formatter = FuncFormatter(lambda x, pos: f'{x:.0f}%')
+    ax1.xaxis.set_major_formatter(formatter)
+    ax1.yaxis.set_major_formatter(formatter)
+    
+    plt.title('Not Zero Sum: Median Growth Rate of Insurance Strategy for Different Standalone Insurance Payoffs')
+    ax1.legend()
+    plt.grid(True)
+    plt.show()
