@@ -223,7 +223,7 @@ def plot_median_growth(ratio, bet1, bet2, kelly_payoff, step_size=-0.001):
     intersect_y = y_values[intersect_idx[0]]
 
     # Create the plot
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(figsize=(5, 3))
 
     ax1.plot(x_values, y_values, label='Insurance Payoff')
     ax1.axhline(y=kelly_payoff, color='grey', linestyle='--', label='Kelly Payoff')
