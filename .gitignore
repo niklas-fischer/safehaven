@@ -5,4 +5,5 @@ test.ipynb
 # Exclude folder
 plots
 modules/__pycache__
+output
 
