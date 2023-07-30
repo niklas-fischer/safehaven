@@ -96,7 +96,7 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes,
     ax1.set_yscale('log')
 
     # Set the y-axis limits
-    ax1.set_ylim([1e-12, 1e7])
+    #ax1.set_ylim([1e-12, 1e7])
 
     # Custom formatter for y-axis ticks
     def wealth_formatter(x, pos):
@@ -117,7 +117,7 @@ def plot_random_walk_frequency_distribution(num_walks, num_rolls, dice_outcomes,
     ax2.yaxis.set_label_position("right")
 
     # Set the y-axis limits
-    ax2.set_ylim([-8, 4.5])
+    # ax2.set_ylim([-8, 4.5])
 
     # Adjust spacing between subplots
     plt.subplots_adjust(wspace=0.05)
