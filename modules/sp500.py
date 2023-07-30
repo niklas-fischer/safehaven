@@ -1,13 +1,11 @@
 import pandas as pd
-import datetime
-from dateutil.relativedelta import relativedelta
 import quandl
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 class DataLoader:
     """
-    This class is responsible for loading data from Quandl and storing them in a DataFrame.
+    This class is responsible for loading data from Quandl and storing them in a DataFrame
     """
 
     def __init__(self, start_date, end_date, price_code, yield_code):
@@ -17,6 +15,9 @@ class DataLoader:
         self.yield_code = yield_code
 
     def load_data(self):
+        """
+        Load data from Quandl
+        """
         # Loading S&P 500 yearly return and dividend data
         df_price = quandl.get(self.price_code, start_date=self.start_date, end_date=self.end_date)
         df_yield = quandl.get(self.yield_code, start_date=self.start_date, end_date=self.end_date)
@@ -29,6 +30,9 @@ class DataProcessor:
     """
 
     def process_data(self, df_price, df_yield):
+        """
+        Processing `df_price` and `df_yield` to calculate return of SPX in last 120 years
+        """
         # Setting date range for df_price (data from first of year)
         df_price = df_price[df_price.index.month == 1]
         df_price = df_price[df_price.index.day == 1]
@@ -71,6 +75,9 @@ class DataSaver:
     """
 
     def save_data_to_csv(self, df, path, sep=';'):
+        """
+        Saving DataFrame to csv
+        """
         df.to_csv(path, sep=sep)
 
 
@@ -80,6 +87,9 @@ class DataVisualizer:
     """
 
     def plot_data(self, df, start_date, end_date):
+        """
+        Plotting DataFrame with SNS
+        """
         # Create yearly returns of S&P 500 plot
         sns.countplot(x='ReturnRange', data=df, color='#3a89bf')
         
