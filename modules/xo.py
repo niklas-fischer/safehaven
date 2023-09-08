@@ -152,7 +152,8 @@ def _plot_combined_outcome(ax, sp500, safe_haven, weights, categories):
     ax.scatter(grouped.index, grouped['mean'], color='black', marker='^', s=40)
     
     # Set plot label
-    ax.set_ylabel(f"{weights[0] * 100} % SPX &\n {weights[1] * 100} % {safe_haven['title']}")
+    ax.set_ylabel(f"{int(weights[0] * 100)} % SPX &\n {int(weights[1] * 100)} % {safe_haven['title']}")
+
 
 ############# 
 # FUNCTIONS #
