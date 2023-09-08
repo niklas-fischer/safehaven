@@ -105,7 +105,7 @@ def _plot_safe_haven(ax, safe_haven, categories, marker):
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: '{:.0%}'.format(x)))  # Format y-axis as percentage
 
 
-def _plot_combined_outcome(ax, sp500, safe_haven, weights):
+def _plot_combined_outcome(ax, sp500, safe_haven, weights, categories):
     """
     Plots a line chart of a weighted outcome of the S&P 500 and a safe haven prototype.
 
@@ -117,20 +117,18 @@ def _plot_combined_outcome(ax, sp500, safe_haven, weights):
 
     Returns:
     None (displays the plot)
-    """    
+    """   
+    # Getting weighted SPX data
+    sp500_weighted = calculate_weighted_return(sp500, safe_haven, weights, categories)
+
     # Grouping and Aggregating by `ReturnRange`, getting min and max data points:
-    grouped = sp500.groupby('ReturnRange')['TotalReturn'].agg(['min', 'max', 'mean'])
+    grouped = sp500_weighted.groupby('ReturnRange')['WeightedReturn'].agg(['min', 'max', 'mean'])
 
-    grouped = grouped.sort_values(by='mean')
-
-    bars = ax.bar(grouped.index, grouped['max'] - grouped['min'], bottom=grouped['min'], color='#3a89bf', label="Return Range")
+    bars = ax.bar(grouped.index, grouped['max'] - grouped['min'], bottom=grouped['min'], color='#3a89bf', label="Weighted Return Range")
 
     # Ensure the safe_haven outcomes and the DataFrame have the same length
     if len(grouped) != len(safe_haven['outcomes']):
         raise ValueError("Length of safe_haven outcomes does not match DataFrame group length.")
-
-    # Calculate the weighted average
-    weighted_average = (grouped['mean'] * weights[0] + safe_haven['outcomes'] * weights[1]) / sum(weights)
 
     # Set Y-axis limits
     ax.set_ylim(-0.5, 1.0)  # -50% to 100%
@@ -148,10 +146,10 @@ def _plot_combined_outcome(ax, sp500, safe_haven, weights):
     ax.yaxis.set_major_formatter(FuncFormatter(percent_formatter))
 
     # Plot the weighted average returns with dashed black line
-    ax.plot(grouped.index, weighted_average, color='black', linestyle='--')
+    ax.plot(grouped.index, grouped['mean'], color='black', linestyle='--')
 
     # Mark average returns with 'x' in blue
-    ax.scatter(grouped.index, weighted_average, color='black', marker='^', s=40)
+    ax.scatter(grouped.index, grouped['mean'], color='black', marker='^', s=40)
     
     # Set plot label
     ax.set_ylabel(f"{weights[0] * 100} % SPX &\n {weights[1] * 100} % {safe_haven['title']}")
@@ -162,6 +160,50 @@ def _plot_combined_outcome(ax, sp500, safe_haven, weights):
 
 def percent_formatter(x, pos):
     return f"{x/100:.0%}"
+
+def calculate_weighted_return(sp500, safe_haven, weights, categories):
+    """
+    This function calculates the weighted return of the S&P 500 index, 
+    considering a specific safe haven and a set of weights.
+
+    Parameters:
+    sp500 (pd.DataFrame): A DataFrame containing the S&P 500 outcomes for the last 120 years.
+    safe_haven (dict): A dictionary representing a cartoon prototype of a safe haven.
+    weights (list): A list of two elements representing the weights for the sp500 and the safe haven.
+
+    Returns:
+    pd.DataFrame: A DataFrame with the original data and additional columns: 'WeightedReturn' and 'WeightedReturnRange'.
+    """
+    
+    # Create a category mapping using the outcomes from the safe haven
+    category_mapping = {
+        '< -15%': safe_haven['outcomes'][0],
+        '-15% to 0%': safe_haven['outcomes'][1],
+        '0% to 15%': safe_haven['outcomes'][2],
+        '15% to 30%': safe_haven['outcomes'][3],
+        '> 30%': safe_haven['outcomes'][4]
+    }
+    
+    # Apply the category mapping to calculate the WeightedReturn
+    sp500['WeightedReturn'] = sp500['ReturnRange'].map(category_mapping) * weights[1]
+
+    # Add weighted TotalReturn to each value in the WeightedReturn column
+    sp500['WeightedReturn'] = (sp500['TotalReturn'] * weights[0]) + sp500['WeightedReturn']
+
+    # Create bins and categories for classifying the weighted return values
+    bins = [float('-inf'), -.15, .0, .15, .30, float('inf')]
+    categories = ['< -15%', '-15% to 0%', '0% to 15%', '15% to 30%', '> 30%']
+
+    # Create a new column WeightedReturnRange to classify the values of WeightedReturn based on the defined bins and categories
+    sp500['WeightedReturnRange'] = pd.cut(sp500['WeightedReturn'], bins=bins, labels=categories)
+
+    sp500['ReturnRange'] = pd.Categorical(sp500['ReturnRange'], categories=categories, ordered=True)
+    
+    # Save the DataFrame to a CSV file
+    csv_filename = f"../output/sp500_weighted_{safe_haven['title'].lower()}.csv"
+    sp500.to_csv(csv_filename, index=False)
+
+    return sp500
 
 ######### 
 # PLOTS #
@@ -183,7 +225,7 @@ def plot_xo_sp500(sp500, safe_haven, weights):
     categories = ['< -15%', '-15% to 0%', '0% to 15%', '15% to 30%', '> 30%']
 
     # Create a figure with 4 subplots
-    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(3, 8))
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(4, 10))
 
     # Subplot 1: Distribution of S&P 500 outcomes
     _plot_sp500(ax1, sp500, safe_haven, categories)
@@ -195,7 +237,7 @@ def plot_xo_sp500(sp500, safe_haven, weights):
     _plot_safe_haven(ax3, safe_haven, categories, 'o')
 
     # Subplot 4: Combined safe haven cartoon prototype outcome
-    _plot_combined_outcome(ax4, sp500, safe_haven, weights)
+    _plot_combined_outcome(ax4, sp500, safe_haven, weights, categories)
 
     # Adjust spacing between subplots
     plt.tight_layout()
