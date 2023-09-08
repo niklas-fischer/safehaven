@@ -5,6 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter 
 import pandas as pd
+import numpy as np
 
 #########
 # CONST #
@@ -53,7 +54,6 @@ def _plot_return_ranges(ax, sp500, marker):
     sp500 (DataFrame): The input DataFrame containing 'TotalReturn' and 'ReturnRange' columns (data of S&P 500)
     marker: Marker symbol
     """
-
     # Grouping and Aggregating by `ReturnRange`
     grouped = sp500.groupby('ReturnRange')['TotalReturn'].agg(['min', 'max', 'mean'])
 
@@ -84,6 +84,12 @@ def _plot_return_ranges(ax, sp500, marker):
 
     # Connect average returns with dashed blue line
     ax.plot(grouped.index, grouped['mean'], color='black', linestyle='--')
+
+    # Calculate arithmetic mean of sp500 data
+    arith_mean = _calculate_arith_mean(sp500['TotalReturn'])
+
+    # Add annotations for arithmetic and geometric mean
+    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
     
     # Set plot label
     ax.set_ylabel('SPX')
@@ -107,8 +113,14 @@ def _plot_safe_haven(ax, safe_haven, categories, marker):
     ax.set_ylabel(safe_haven["title"])
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: '{:.0%}'.format(x)))  # Format y-axis as percentage
 
+    # Calculate arithmetic mean of safe_haven data
+    arith_mean = _calculate_arith_mean(safe_haven['outcomes'])
 
-def _plot_combined_outcome(ax, sp500, safe_haven, weights, categories):
+    # Add annotations for arithmetic and geometric mean
+    ax.text(0.02, 0.98, f'ARITHM AVG: {arith_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
+
+
+def _plot_combined_outcome(ax, sp500, safe_haven, weights, categories, marker):
     """
     Plots a line chart of a weighted outcome of the S&P 500 and a safe haven prototype.
 
@@ -152,10 +164,20 @@ def _plot_combined_outcome(ax, sp500, safe_haven, weights, categories):
     ax.plot(grouped.index, grouped['mean'], color='black', linestyle='--')
 
     # Mark average returns with 'x' in blue
-    ax.scatter(grouped.index, grouped['mean'], color='black', marker='^', s=40)
+    ax.scatter(grouped.index, grouped['mean'], color='black', marker=marker, s=60)
     
     # Set plot label
     ax.set_ylabel(f"{int(weights[0] * 100)} % SPX &\n {int(weights[1] * 100)} % {safe_haven['title']}")
+
+def _calculate_arith_mean(array):
+        """
+        Calculate the arithmetic mean of the outcome.
+        
+        Returns:
+        float: The arithmetic mean of the outcome.
+        """
+        arith_mean = (np.mean(array)) * 100
+        return arith_mean
 
 
 ############# 
@@ -242,7 +264,7 @@ def plot_xo_sp500(sp500, safe_haven, weights):
     _plot_safe_haven(ax3, safe_haven, categories, 'o')
 
     # Subplot 4: Combined safe haven cartoon prototype outcome
-    _plot_combined_outcome(ax4, sp500, safe_haven, weights, categories)
+    _plot_combined_outcome(ax4, sp500, safe_haven, weights, categories, (8, 1, 0))
 
     # Adjust spacing between subplots
     plt.tight_layout()
