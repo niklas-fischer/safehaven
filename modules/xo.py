@@ -187,26 +187,28 @@ def calculate_weighted_return(sp500, safe_haven, weights, categories):
         '15% to 30%': safe_haven['outcomes'][3],
         '> 30%': safe_haven['outcomes'][4]
     }
+
+    sp500_copy = sp500.copy()
     
     # Apply the category mapping to calculate the WeightedReturn
-    sp500['WeightedReturn'] = sp500['ReturnRange'].map(category_mapping) * weights[1]
+    sp500_copy['WeightedReturn'] = sp500_copy['ReturnRange'].map(category_mapping) * weights[1]
 
     # Add weighted TotalReturn to each value in the WeightedReturn column
-    sp500['WeightedReturn'] = (sp500['TotalReturn'] * weights[0]) + sp500['WeightedReturn']
+    sp500_copy['WeightedReturn'] = (sp500_copy['TotalReturn'] * weights[0]) + sp500_copy['WeightedReturn']
 
     # Create bins and categories for classifying the weighted return values
     bins = [float('-inf'), -.15, .0, .15, .30, float('inf')]
 
     # Create a new column WeightedReturnRange to classify the values of WeightedReturn based on the defined bins and categories
-    sp500['WeightedReturnRange'] = pd.cut(sp500['WeightedReturn'], bins=bins, labels=categories)
+    sp500_copy['WeightedReturnRange'] = pd.cut(sp500_copy['WeightedReturn'], bins=bins, labels=categories)
 
-    sp500['ReturnRange'] = pd.Categorical(sp500['ReturnRange'], categories=categories, ordered=True)
+    sp500_copy['ReturnRange'] = pd.Categorical(sp500_copy['ReturnRange'], categories=categories, ordered=True)
     
     # Save the DataFrame to a CSV file
     csv_filename = f"../output/sp500_weighted_{safe_haven['title'].lower()}.csv"
-    sp500.to_csv(csv_filename, index=False)
+    sp500_copy.to_csv(csv_filename, index=False)
 
-    return sp500
+    return sp500_copy
 
 ######### 
 # PLOTS #
