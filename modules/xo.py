@@ -200,8 +200,7 @@ def calculate_weighted_return(sp500, safe_haven, weights, categories):
 
     # Create bins and categories for classifying the weighted return values
     bins = [float('-inf'), -.15, .0, .15, .30, float('inf')]
-    categories = ['< -15%', '-15% to 0%', '0% to 15%', '15% to 30%', '> 30%']
-
+    
     # Create a new column WeightedReturnRange to classify the values of WeightedReturn based on the defined bins and categories
     sp500['WeightedReturnRange'] = pd.cut(sp500['WeightedReturn'], bins=bins, labels=categories)
 
