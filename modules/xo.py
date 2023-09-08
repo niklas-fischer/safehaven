@@ -10,6 +10,13 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter 
 import pandas as pd
 
+#########
+# CONST #
+#########
+
+Y_AXIS_LIMIT_LOW = -0.5
+Y_AXIS_LIMIT_HIGH = 1.0
+
 
 ####################
 # HELPER FUNCTIONS #
@@ -61,7 +68,7 @@ def _plot_return_ranges(ax, sp500, marker):
     bars = ax.bar(grouped.index, grouped['max'] - grouped['min'], bottom=grouped['min'], color='#3a89bf')
 
     # Set Y-axis limits
-    ax.set_ylim(-0.5, 1.0)  # -50% to 100%
+    ax.set_ylim(Y_AXIS_LIMIT_LOW, Y_AXIS_LIMIT_HIGH)
 
     # Remove X-axis labels
     ax.set_xticks([])
@@ -131,7 +138,7 @@ def _plot_combined_outcome(ax, sp500, safe_haven, weights, categories):
         raise ValueError("Length of safe_haven outcomes does not match DataFrame group length.")
 
     # Set Y-axis limits
-    ax.set_ylim(-0.5, 1.0)  # -50% to 100%
+    ax.set_ylim(Y_AXIS_LIMIT_LOW, Y_AXIS_LIMIT_HIGH)
 
     # Remove X-axis labels
     ax.set_xticks([])
