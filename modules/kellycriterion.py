@@ -77,7 +77,7 @@ def _plot_bet_outcomes(ax, bet, marker):
     ax.text(0.02, 0.98, f'ARITHM AVG: {bet.arith_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
     ax.text(0.02, 0.88, f'GEOM AVG: {bet.geom_mean:.2f}%', transform=ax.transAxes, verticalalignment='top')
 
-def _plot_combined_outcome(ax, bet_comparison):
+def _plot_combined_outcome(ax, bet_comparison, marker):
     """
     This function plots the weighted average outcomes based on the provided ratio.
 
@@ -97,7 +97,7 @@ def _plot_combined_outcome(ax, bet_comparison):
     categories = [str(int((result - 1) * 100)) + "%" for i, result in enumerate(bet_comparison.outcomes)]
 
     # Plot the weighted average outcomes
-    ax.plot(categories, win_probabilities, marker='^')
+    ax.plot(categories, win_probabilities, marker=marker, markersize=8)
 
     # Set the y-axis limits
     ax.set_ylim([-50, 100])
@@ -166,7 +166,7 @@ def plot_xo_profile(bet1, bet2, bet_comparison, title):
     _plot_bet_outcomes(ax3, bet2, 'o')
 
     # Subplot 4: Height of combined outcome
-    _plot_combined_outcome(ax4, bet_comparison)
+    _plot_combined_outcome(ax4, bet_comparison, (8, 1, 0))
 
     # Adjust spacing between subplots
     plt.tight_layout()
